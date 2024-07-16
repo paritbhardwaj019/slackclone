@@ -10,8 +10,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { signInWithEmail } from "@/lib/actions/auth";
 import { authSchema } from "@/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { BsSlack } from "react-icons/bs";
 import { FcGoogle } from "react-icons/fc";
@@ -20,14 +22,26 @@ import { RxGithubLogo } from "react-icons/rx";
 import { z } from "zod";
 
 export default function () {
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+
   const form = useForm<z.infer<typeof authSchema>>({
     resolver: zodResolver(authSchema),
+    mode: "onSubmit",
     defaultValues: {
       email: "",
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof authSchema>) => {};
+  const onSubmit = async (values: z.infer<typeof authSchema>) => {
+    setIsAuthenticating(true);
+    const response = await signInWithEmail(values);
+    const { error } = JSON.parse(response);
+    setIsAuthenticating(false);
+
+    if (!error) {
+      return;
+    }
+  };
 
   return (
     <main className="min-h-screen p-5 grid text-center place-content-center bg-white">
@@ -89,12 +103,13 @@ export default function () {
                 <Button
                   variant="secondary"
                   type="submit"
-                  className="bg-primary-dark hover:bg-primary-dark/90 w-full my-5 text-white"
+                  className="bg-primary-dark hover:bg-primary-dark/90 disabled:bg-primary-dark/90 w-full my-5 text-white"
+                  disabled={isAuthenticating}
                 >
                   <Typography variant="p">Sign in with email</Typography>
                 </Button>
 
-                <div className="px-5 py-4 bg-gray-100 rounded-sm">
+                <div className="px-5 py-4 bg-gray-100 rounded-md">
                   <div className="text-gray-500 flex items-center space-x-3">
                     <MdOutlineAutoAwesome />
                     <Typography variant="p">
