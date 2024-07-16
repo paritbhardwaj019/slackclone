@@ -1,34 +1,34 @@
-"use client";
+'use client';
 
-import { Typography } from "@/components/typography";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { Typography } from '@/components/typography';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { signInWithEmail } from "@/lib/actions/auth";
-import { authSchema } from "@/lib/validations/auth";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { BsSlack } from "react-icons/bs";
-import { FcGoogle } from "react-icons/fc";
-import { MdOutlineAutoAwesome } from "react-icons/md";
-import { RxGithubLogo } from "react-icons/rx";
-import { z } from "zod";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { signInWithEmail } from '@/lib/actions/auth';
+import { authSchema } from '@/lib/validations/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { BsSlack } from 'react-icons/bs';
+import { FcGoogle } from 'react-icons/fc';
+import { MdOutlineAutoAwesome } from 'react-icons/md';
+import { RxGithubLogo } from 'react-icons/rx';
+import { z } from 'zod';
 
 export default function () {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   const form = useForm<z.infer<typeof authSchema>>({
     resolver: zodResolver(authSchema),
-    mode: "onSubmit",
+    mode: 'onSubmit',
     defaultValues: {
-      email: "",
+      email: '',
     },
   });
 
@@ -56,7 +56,7 @@ export default function () {
         </Typography>
 
         <Typography variant="p" className="opacity-90 mb-7">
-          We suggest using the{" "}
+          We suggest using the{' '}
           <span className="font-semibold">
             email address that you use at work
           </span>
