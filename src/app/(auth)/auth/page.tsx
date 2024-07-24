@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Typography } from '@/components/typography';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,7 +13,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { signInWithEmail } from '@/lib/actions/auth';
 import { authSchema } from '@/lib/validations/auth';
+import { createClient } from '@/utils/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { BsSlack } from 'react-icons/bs';
 import { FcGoogle } from 'react-icons/fc';
@@ -22,7 +24,23 @@ import { RxGithubLogo } from 'react-icons/rx';
 import { z } from 'zod';
 
 export default function () {
+  const router = useRouter();
+
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const supabase = createClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session) router.push('/');
+
+      setIsMounted(true);
+    })();
+  }, [router]);
 
   const form = useForm<z.infer<typeof authSchema>>({
     resolver: zodResolver(authSchema),
@@ -42,6 +60,19 @@ export default function () {
       return;
     }
   };
+
+  const signInWithGithub = async () => {
+    const supabase = createClient();
+
+    await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: `${process.env.NEXT_PUBLIC_PUBLIC_ORIGIN}/auth/callback`,
+      },
+    });
+  };
+
+  if (!isMounted) return null;
 
   return (
     <main className="min-h-screen p-5 grid text-center place-content-center bg-white">
@@ -69,7 +100,11 @@ export default function () {
               Sign in with Google
             </Typography>
           </Button>
-          <Button variant="outline" className="py-6 border-2 flex space-x-3">
+          <Button
+            variant="outline"
+            className="py-6 border-2 flex space-x-3"
+            onClick={signInWithGithub}
+          >
             <RxGithubLogo size={30} />
             <Typography className="text-xl" variant="p">
               Sign in with Github

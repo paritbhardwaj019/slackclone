@@ -1,5 +1,7 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { cookies } from "next/headers";
+'use server';
+
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 interface cookieStoreInterface {
   name: string;
@@ -7,10 +9,10 @@ interface cookieStoreInterface {
   options: CookieOptions;
 }
 
-export function createClient() {
+export async function createClient() {
   const cookieStore = cookies();
 
-  return createServerClient(
+  const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -19,11 +21,19 @@ export function createClient() {
           return cookieStore.getAll();
         },
         setAll(cookies: cookieStoreInterface[]) {
-          cookies.forEach(({ name, value, options }) =>
-            cookieStore.set({ name, value, ...options })
-          );
+          try {
+            cookies.forEach(({ name, value, options }) =>
+              cookieStore.set({
+                name,
+                value,
+                ...options,
+              }),
+            );
+          } catch (error) {}
         },
       },
-    }
+    },
   );
+
+  return supabase;
 }
