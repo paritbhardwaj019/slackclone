@@ -6,12 +6,15 @@ import { Typography } from '@/components/typography';
 import { Button } from '@/components/ui/button';
 import { useWorkSpaceValue } from '@/hooks/use-workspace-value';
 import { createWorkspace } from '@/lib/actions/workspace';
+import { useRouter } from 'next/navigation';
 import slugify from 'slugify';
+import { toast } from 'sonner';
 import { v4 as uuid } from 'uuid';
 
 export const Step2 = () => {
-  const { name, updateValues, setCurrStep, updateImageUrl, imageUrl } =
-    useWorkSpaceValue();
+  const router = useRouter();
+
+  const { name, updateImageUrl, imageUrl } = useWorkSpaceValue();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
@@ -21,14 +24,21 @@ export const Step2 = () => {
       lower: true,
     });
     const invite_code = uuid();
-    await createWorkspace({
+    const error = await createWorkspace({
       imageUrl,
       name,
       invite_code,
       slug,
     });
-
     setIsSubmitting(false);
+
+    if (error?.error) {
+      console.log(error);
+      return toast.error("Couln't create workspace. Please try again");
+    }
+
+    toast.success('Workspace created successfully');
+    router.push('/');
   };
 
   return (

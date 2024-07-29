@@ -3,8 +3,8 @@
 import { Typography } from '@/components/typography';
 import { useWorkSpaceValue } from '@/hooks/use-workspace-value';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa6';
-import { Step1 } from '../_components/step-1';
-import { Step2 } from '../_components/step-2';
+import { Step1 } from './_components/step-1';
+import { Step2 } from './_components/step-2';
 
 export default function () {
   const { currStep, setCurrStep } = useWorkSpaceValue();

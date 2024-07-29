@@ -9,7 +9,37 @@ const updateUserWorkspace = async ({
 }: {
   userId: string;
   workspaceId: string;
-}) => {};
+}) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('add_workspace_to_user', {
+    user_id: userId,
+    new_workspace: workspaceId,
+  });
+
+  return {
+    data,
+    error,
+  };
+};
+
+const addMembersToWorkspace = async ({
+  workspaceId,
+  userId,
+}: {
+  userId: string;
+  workspaceId: string;
+}) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc('add_member_to_workspace', {
+    user_id: userId,
+    workspace_id: workspaceId,
+  });
+
+  return {
+    data,
+    error,
+  };
+};
 
 const createWorkspace = async ({
   imageUrl,
@@ -40,7 +70,18 @@ const createWorkspace = async ({
 
   if (error) return { insertError: error };
 
-  await updateUserWorkspace({ userId: user.id, workspaceId: data[0]?.id });
+  const { data: updateWorkspaceData, error: updateWorkspaceError } =
+    await updateUserWorkspace({ userId: user.id, workspaceId: data[0]?.id });
+
+  if (updateWorkspaceError) return { error: updateWorkspaceError };
+
+  const { data: addMembersToWorkspaceData, error: addMembersToWorkspaceError } =
+    await addMembersToWorkspace({
+      userId: user.id,
+      workspaceId: data[0]?.id,
+    });
+
+  if (addMembersToWorkspaceError) return { error: addMembersToWorkspaceError };
 };
 
 export { createWorkspace };
