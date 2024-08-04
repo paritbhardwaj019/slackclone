@@ -1,9 +1,12 @@
 'use client';
 
+import { useState } from 'react';
+import { useWorkSpaceValue } from '@/hooks/use-workspace-value';
 import { createWorkspace } from '@/lib/actions/workspace';
 import { createWorkspaceSchema } from '@/lib/validations/workspace';
 import { generateSlug } from '@/utils/generateSlug';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { v4 as uuid } from 'uuid';
@@ -22,6 +25,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from './ui/form';
 import { Input } from './ui/input';
 
 export const CreateWorkspace = () => {
+  const router = useRouter();
+
+  const { imageUrl } = useWorkSpaceValue();
+
+  const [isOpen, setIsOpen] = useState(false);
+
   const form = useForm<z.infer<typeof createWorkspaceSchema>>({
     resolver: zodResolver(createWorkspaceSchema),
     defaultValues: {
@@ -36,6 +45,7 @@ export const CreateWorkspace = () => {
       name,
       invite_code,
       slug,
+      imageUrl,
     });
 
     if (result?.error) {
@@ -45,10 +55,12 @@ export const CreateWorkspace = () => {
 
     toast.success('Workspace created successfully');
     form.reset();
+    router.refresh();
+    setIsOpen(false);
   }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={() => setIsOpen((prev) => !prev)}>
       <DialogTrigger className="py-2">
         <Typography variant="p">+ Add Workspace</Typography>
       </DialogTrigger>

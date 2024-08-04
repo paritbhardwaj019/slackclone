@@ -1,5 +1,8 @@
+import { useState } from 'react';
+import { cn } from '@/lib/utils';
 import { Workspace } from '@/types/app';
 import { Popover } from '@radix-ui/react-popover';
+import { useRouter } from 'next/navigation';
 import { PiChatsTeardrop } from 'react-icons/pi';
 import { RiHome2Fill } from 'react-icons/ri';
 import { CreateWorkspace } from './create-workspace';
@@ -18,6 +21,12 @@ export const SidebarNav = ({
   userWorkspaceData,
   currentWorkspaceData,
 }: SidebarNavProps) => {
+  const router = useRouter();
+
+  function switchWorkspace(id: string) {
+    router.push('/workspace' + '/' + id);
+  }
+
   return (
     <nav>
       <ul className="flex flex-col space-y-4">
@@ -29,51 +38,58 @@ export const SidebarNav = ({
                   <AvatarImage
                     src={currentWorkspaceData.image_url || ''}
                     alt={currentWorkspaceData.name}
-                    className="objects-cover w-full h-full"
+                    className="object-cover w-full h-full"
                   ></AvatarImage>
                   <AvatarFallback className="bg-neutral-700">
                     <Typography variant="p">
-                      {currentWorkspaceData.name.slice(0, 2)}
+                      {currentWorkspaceData.name.toUpperCase().slice(0, 2)}
                     </Typography>
                   </AvatarFallback>
                 </Avatar>
               </PopoverTrigger>
-              <PopoverContent side="right" className="p-0">
-                <Card className="w-[350px] border-0">
+              <PopoverContent side="right" className="p-0 w-[350px]">
+                <Card className="p-0">
                   <CardContent className="flex p-0 flex-col">
-                    {userWorkspaceData.map((el) => (
-                      <div
-                        key={el.id}
-                        className="hover:opacity-70 px-2 py-3 flex gap-2"
-                      >
-                        <Avatar>
-                          <AvatarImage
-                            src={el.image_url || ''}
-                            alt={el.name}
-                            className="objects-cover w-full h-full"
-                          />
-                          <AvatarFallback className="bg-neutral-700">
-                            <Typography variant="p">
-                              {el.name.slice(0, 2)}
+                    {userWorkspaceData.map((el) => {
+                      const isActive = currentWorkspaceData.id === el.id;
+                      return (
+                        <div
+                          key={el.id}
+                          className={cn(
+                            'hover:opacity-70 px-2 py-3 flex gap-2 cursor-pointer ',
+                            isActive && 'bg-neutral-700 text-white',
+                          )}
+                          onClick={() => switchWorkspace(el.id)}
+                        >
+                          <Avatar>
+                            <AvatarImage
+                              src={el.image_url || ''}
+                              alt={el.name}
+                              className="object-cover w-full h-full"
+                            />
+                            <AvatarFallback className="bg-neutral-700">
+                              <Typography variant="p">
+                                {el.name.toUpperCase().slice(0, 2)}
+                              </Typography>
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <Typography
+                              variant="h3"
+                              className="text-sm lg:text-sm"
+                            >
+                              {el.name}
                             </Typography>
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <Typography
-                            variant="h3"
-                            className="text-sm lg:text-sm"
-                          >
-                            {el.name}
-                          </Typography>
-                          <Typography
-                            variant="p"
-                            className="text-xs lg:text-xs"
-                          >
-                            {el.invite_code}
-                          </Typography>
+                            <Typography
+                              variant="p"
+                              className="text-xs lg:text-xs"
+                            >
+                              {el.invite_code}
+                            </Typography>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
 
                     <Separator />
 
