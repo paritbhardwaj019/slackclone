@@ -68,7 +68,7 @@ const createWorkspace = async ({
     })
     .select('*');
 
-  if (error) return { insertError: error };
+  if (error) return { error };
 
   const { data: updateWorkspaceData, error: updateWorkspaceError } =
     await updateUserWorkspace({ userId: user.id, workspaceId: data[0]?.id });
@@ -84,4 +84,30 @@ const createWorkspace = async ({
   if (addMembersToWorkspaceError) return { error: addMembersToWorkspaceError };
 };
 
-export { createWorkspace };
+const getUserWorkspaceData = async ({
+  workspaceIds,
+}: {
+  workspaceIds: Array<string>;
+}) => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('workspaces')
+    .select('*')
+    .in('id', workspaceIds);
+
+  return [data, error];
+};
+
+const getCurrentWorkspaceData = async (id: string) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('workspaces')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  return [data, error];
+};
+
+export { createWorkspace, getUserWorkspaceData, getCurrentWorkspaceData };

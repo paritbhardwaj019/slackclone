@@ -11,7 +11,7 @@ export default async function () {
 
   if (!userWorkSpaceId) redirect('/create-workspace');
 
-  if (userWorkSpaceId) redirect(`/wokspace/${userWorkSpaceId}`);
+  if (userWorkSpaceId) redirect(`/workspace/${userWorkSpaceId}`);
 
   return (
     <main>

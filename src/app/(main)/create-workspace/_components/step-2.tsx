@@ -6,8 +6,8 @@ import { Typography } from '@/components/typography';
 import { Button } from '@/components/ui/button';
 import { useWorkSpaceValue } from '@/hooks/use-workspace-value';
 import { createWorkspace } from '@/lib/actions/workspace';
+import { generateSlug } from '@/utils/generateSlug';
 import { useRouter } from 'next/navigation';
-import slugify from 'slugify';
 import { toast } from 'sonner';
 import { v4 as uuid } from 'uuid';
 
@@ -20,9 +20,7 @@ export const Step2 = () => {
   const handleSubmit = async () => {
     setIsSubmitting(true);
 
-    const slug = slugify(name, {
-      lower: true,
-    });
+    const slug = generateSlug(name);
     const invite_code = uuid();
     const error = await createWorkspace({
       imageUrl,
