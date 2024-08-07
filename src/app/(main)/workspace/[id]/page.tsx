@@ -28,7 +28,7 @@ export default async function ({ params: { id } }: { params: { id: string } }) {
           userWorkspaceData={data as Workspace[]}
           user={user}
         />
-        <InfoSection />
+        <InfoSection currentWorkspaceData={currentWorkspaceData} user={user} />
         Workspace
       </div>
 

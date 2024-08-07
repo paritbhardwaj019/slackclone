@@ -3,7 +3,9 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useColorPrefrences } from '@/providers/color-prefrences';
+import { User, Workspace } from '@/types/app';
 import { FaArrowDown, FaArrowUp, FaPlus } from 'react-icons/fa6';
+import { CreateChannelDialog } from './create-channel-dialog';
 import { Typography } from './typography';
 import {
   Collapsible,
@@ -11,12 +13,19 @@ import {
   CollapsibleTrigger,
 } from './ui/collapsible';
 
-export const InfoSection = () => {
+export const InfoSection = ({
+  currentWorkspaceData,
+  user,
+}: {
+  currentWorkspaceData: Workspace;
+  user: User;
+}) => {
   const { color } = useColorPrefrences();
 
   const [isChannelCollapsed, setIsChannelCollapsed] = useState(false);
   const [isDirectMessageCollapsed, setIsDirectMessageCollapsed] =
     useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   let backgroundColor = 'bg-primary-light';
 
@@ -50,6 +59,7 @@ export const InfoSection = () => {
                 className={cn(
                   'cursor-pointer p-2 rounded-full hover:bg-black/20',
                 )}
+                onClick={() => setDialogOpen(true)}
               >
                 <FaPlus />
               </div>
@@ -140,6 +150,13 @@ export const InfoSection = () => {
           </Collapsible>
         </div>
       </div>
+
+      <CreateChannelDialog
+        dialogOpen={dialogOpen}
+        setDialogOpen={setDialogOpen}
+        workspaceId={currentWorkspaceData.id}
+        userId={user.id}
+      />
     </div>
   );
 };
