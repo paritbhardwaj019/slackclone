@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useColorPrefrences } from '@/providers/color-prefrences';
-import { User, Workspace } from '@/types/app';
+import { Channel, User, Workspace } from '@/types/app';
 import { FaArrowDown, FaArrowUp, FaPlus } from 'react-icons/fa6';
 import { CreateChannelDialog } from './create-channel-dialog';
 import { Typography } from './typography';
@@ -16,9 +16,11 @@ import {
 export const InfoSection = ({
   currentWorkspaceData,
   user,
+  userWorkspaceChannels,
 }: {
   currentWorkspaceData: Workspace;
   user: User;
+  userWorkspaceChannels: Channel[];
 }) => {
   const { color } = useColorPrefrences();
 
@@ -66,38 +68,17 @@ export const InfoSection = ({
             </div>
 
             <CollapsibleContent>
-              <Typography
-                variant="p"
-                className={cn(
-                  'px-2 py-1 rounded-sm cursor-pointer hover:bg-black/20',
-                )}
-              >
-                # channel-name-1
-              </Typography>
-              <Typography
-                variant="p"
-                className={cn(
-                  'px-2 py-1 rounded-sm cursor-pointer hover:bg-black/20',
-                )}
-              >
-                # channel-name-2
-              </Typography>
-              <Typography
-                variant="p"
-                className={cn(
-                  'px-2 py-1 rounded-sm cursor-pointer hover:bg-black/20',
-                )}
-              >
-                # channel-name-3
-              </Typography>
-              <Typography
-                variant="p"
-                className={cn(
-                  'px-2 py-1 rounded-sm cursor-pointer hover:bg-black/20',
-                )}
-              >
-                # channel-name-4
-              </Typography>
+              {userWorkspaceChannels.map((el) => (
+                <Typography
+                  variant="p"
+                  className={cn(
+                    'px-2 py-1 rounded-sm cursor-pointer hover:bg-black/20',
+                  )}
+                  key={el.id}
+                >
+                  # <span className="ml-2">{el.name}</span>
+                </Typography>
+              ))}
             </CollapsibleContent>
           </Collapsible>
         </div>

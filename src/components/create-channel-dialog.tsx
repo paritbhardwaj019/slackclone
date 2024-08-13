@@ -1,7 +1,10 @@
 import { Dispatch, SetStateAction, useState } from 'react';
+import { createChannel } from '@/lib/actions/channel';
 import { createChannelSchema } from '@/lib/validations/channel';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 import { Typography } from './typography';
 import { Button } from './ui/button';
@@ -37,6 +40,7 @@ export const CreateChannelDialog = ({
   workspaceId,
   userId,
 }: CreateChannelDialogProps) => {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof createChannelSchema>>({
@@ -47,8 +51,23 @@ export const CreateChannelDialog = ({
   });
 
   const onSubmit = async (data: z.infer<typeof createChannelSchema>) => {
-    const { name } = data;
-    console.log(name);
+    try {
+      setIsSubmitting(true);
+
+      await createChannel({
+        name: data.name,
+        userId,
+        workspaceId,
+      });
+
+      setDialogOpen(false);
+      form.reset();
+      setIsSubmitting(false);
+      router.refresh();
+      toast.success('Channel created successfully');
+    } catch (error) {
+      setIsSubmitting(false);
+    }
   };
 
   if (!dialogOpen) return null;
