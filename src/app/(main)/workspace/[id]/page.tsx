@@ -1,4 +1,5 @@
 import { InfoSection } from '@/components/info-section';
+import { NoDataComponent } from '@/components/no-data-component';
 import { Sidebar } from '@/components/sidebar';
 import { getUserWorkspaceChannels } from '@/lib/actions/channel';
 import { getUserDetails } from '@/lib/actions/user';
@@ -25,6 +26,12 @@ export default async function ({ params: { id } }: { params: { id: string } }) {
     user.id,
   );
 
+  if (userWorkspaceChannels.length) {
+    redirect(
+      `/workspace/${currentWorkspaceData.id}/channels/${userWorkspaceChannels[0].id}`,
+    );
+  }
+
   return (
     <>
       <div className="hidden md:block">
@@ -37,8 +44,14 @@ export default async function ({ params: { id } }: { params: { id: string } }) {
           currentWorkspaceData={currentWorkspaceData}
           user={user}
           userWorkspaceChannels={userWorkspaceChannels}
+          currentChannelId=""
         />
-        Workspace
+
+        <NoDataComponent
+          userId={user.id}
+          workspaceId={currentWorkspaceData.id}
+          workspaceName={currentWorkspaceData.name}
+        />
       </div>
 
       <div className="block md:hidden min-h-screen">Mobile</div>

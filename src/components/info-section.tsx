@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useColorPrefrences } from '@/providers/color-prefrences';
 import { Channel, User, Workspace } from '@/types/app';
+import { usePathname, useRouter } from 'next/navigation';
 import { FaArrowDown, FaArrowUp, FaPlus } from 'react-icons/fa6';
 import { CreateChannelDialog } from './create-channel-dialog';
 import { Typography } from './typography';
@@ -17,16 +18,20 @@ export const InfoSection = ({
   currentWorkspaceData,
   user,
   userWorkspaceChannels,
+  currentChannelId,
 }: {
   currentWorkspaceData: Workspace;
   user: User;
   userWorkspaceChannels: Channel[];
+  currentChannelId: string;
 }) => {
+  const router = useRouter();
+  const pathname = usePathname();
   const { color } = useColorPrefrences();
 
-  const [isChannelCollapsed, setIsChannelCollapsed] = useState(false);
+  const [isChannelCollapsed, setIsChannelCollapsed] = useState(true);
   const [isDirectMessageCollapsed, setIsDirectMessageCollapsed] =
-    useState(false);
+    useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   let backgroundColor = 'bg-primary-light';
@@ -36,6 +41,10 @@ export const InfoSection = ({
   } else if (color === 'blue') {
     backgroundColor = 'bg-blue-900';
   }
+
+  const handleNavigation = (href: string) => router.push(href);
+
+  console.log(pathname);
 
   return (
     <div
@@ -72,9 +81,17 @@ export const InfoSection = ({
                 <Typography
                   variant="p"
                   className={cn(
-                    'px-2 py-1 rounded-sm cursor-pointer hover:bg-black/20',
+                    'px-2 py-1 rounded-sm cursor-pointer',
+                    currentChannelId === el.id
+                      ? 'bg-black/20 hover:bg-black/30'
+                      : 'hover:bg-black/30',
                   )}
                   key={el.id}
+                  onClick={() =>
+                    handleNavigation(
+                      `/workspace/${currentWorkspaceData.id}/channels/${el.id}`,
+                    )
+                  }
                 >
                   # <span className="ml-2">{el.name}</span>
                 </Typography>
